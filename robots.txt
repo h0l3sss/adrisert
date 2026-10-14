@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /contato.php
+Sitemap: https://adrisert.com.br/sitemap.xml
