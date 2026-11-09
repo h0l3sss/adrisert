@@ -62,7 +62,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 .header__cta:hover { background: transparent; }
 .header__cta:hover b { color: var(--blue); }
 .header__cta:active { transform: none; box-shadow: none; }
-.header__cta svg { width: 2.1rem; height: 2.1rem; color: #1da851; }
+.header__cta svg { width: 2.6rem; height: 2.6rem; padding: .5rem; border-radius: 50%; background: #25d366; color: #fff; box-shadow: 0 3px 10px rgba(37,211,102,.45); flex: none; transition: transform .2s, box-shadow .2s; }
+.header__cta:hover svg { transform: scale(1.08); box-shadow: 0 5px 14px rgba(37,211,102,.55); }
 .header__cta span { display: flex; flex-direction: column; }
 .header__cta small { font-size: .72rem; font-weight: 500; color: var(--muted); }
 .header__cta b { font-size: .98rem; font-weight: 700; }
