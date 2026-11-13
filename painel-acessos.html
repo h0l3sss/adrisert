@@ -4,119 +4,375 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Painel de acessos | Adrisert</title>
+<title>Acessos do site | Adrisert</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root { --fundo: #f4f6f8; --texto: #101c26; --borda: #d5dce3; --destaque: #1f5f8b; }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) { --fundo: #101c26; --texto: #e8edf2; --borda: #34465a; --destaque: #6fb0de; }
+  :root {
+    --ink: #101c26;
+    --steel: #e8ecef;
+    --white: #ffffff;
+    --blue: #0060b4;
+    --blue-dark: #00457f;
+    --signal: #f0641e;
+    --text: #26343f;
+    --muted: #566672;
+    --rule: #c3ccd3;
+    --display: 'Big Shoulders Display', 'Arial Narrow', sans-serif;
+    --body: 'IBM Plex Sans', system-ui, sans-serif;
   }
-  body { margin: 0; padding: 16px; font-family: "IBM Plex Sans", system-ui, sans-serif; background: var(--fundo); color: var(--texto); }
-  main { max-width: 760px; margin: 0 auto; }
-  h1 { font-size: 1.5rem; margin: 8px 0 16px; }
-  form { display: grid; gap: 12px; margin-bottom: 20px; }
-  label { display: grid; gap: 4px; font-weight: 600; }
-  input, select, button { font: inherit; padding: 10px; border: 1px solid var(--borda); border-radius: 6px; background: transparent; color: inherit; }
-  button { background: var(--destaque); color: #fff; border-color: var(--destaque); cursor: pointer; font-weight: 600; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--steel); color: var(--text); font: 400 1rem/1.5 var(--body); -webkit-font-smoothing: antialiased; }
+  :focus-visible { outline: 3px solid var(--signal); outline-offset: 3px; }
+  [hidden] { display: none !important; }
+
+  h1, h2 { margin: 0; font-family: var(--display); font-weight: 800; color: var(--ink); line-height: 1.1; }
+
+  .topo { background: var(--ink); color: var(--white); padding: 18px clamp(16px, 4vw, 40px); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .topo strong { font-family: var(--display); font-size: 1.5rem; font-weight: 800; letter-spacing: .01em; }
+  .topo span { display: block; color: #b8c4cd; font-size: .9rem; }
+  .topo button { font: inherit; font-weight: 600; padding: 8px 14px; border: 1px solid #4a5d6e; border-radius: 6px; background: transparent; color: var(--white); cursor: pointer; }
+
+  main { max-width: 1100px; margin: 0 auto; padding: clamp(16px, 4vw, 32px); }
+
+  .entrada { max-width: 380px; margin: 48px auto; background: var(--white); border: 1px solid var(--rule); border-radius: 8px; padding: 28px; }
+  .entrada h2 { font-size: 1.9rem; margin-bottom: 18px; }
+  form { display: grid; gap: 14px; }
+  label { display: grid; gap: 6px; font-weight: 600; color: var(--ink); font-size: .95rem; }
+  input, select { font: inherit; padding: 10px 12px; border: 1px solid var(--rule); border-radius: 6px; background: var(--white); color: var(--text); }
+  button.principal { font: inherit; font-weight: 600; padding: 11px 16px; border: 0; border-radius: 6px; background: var(--blue); color: var(--white); cursor: pointer; }
+  button.principal:hover { background: var(--blue-dark); }
   button:disabled { opacity: .6; cursor: wait; }
-  .resumo { margin: 0 0 12px; }
-  .erro { color: #b42318; font-weight: 600; }
-  table { width: 100%; border-collapse: collapse; }
-  th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--borda); overflow-wrap: anywhere; }
-  td.numero, th.numero { text-align: right; }
+
+  .aviso { min-height: 1.4em; margin: 0; font-size: .95rem; color: var(--muted); }
+  .aviso.erro { color: #b42318; font-weight: 600; }
+
+  .barra { display: flex; align-items: end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+  .barra label { min-width: 200px; }
+  .barra .aviso { flex-basis: 100%; }
+
+  .cartoes { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .cartao { background: var(--white); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; }
+  .cartao dt { font-size: .9rem; color: var(--muted); font-weight: 500; }
+  .cartao dd { margin: 4px 0 0; font-family: var(--display); font-size: 2.4rem; font-weight: 800; color: var(--ink); line-height: 1; overflow-wrap: anywhere; }
+  .cartao dd small { display: block; font: 400 .85rem/1.4 var(--body); color: var(--muted); margin-top: 6px; overflow-wrap: anywhere; }
+
+  .bloco { background: var(--white); border: 1px solid var(--rule); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+  .bloco header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .bloco h2 { font-size: 1.5rem; }
+  .bloco header span { color: var(--muted); font-size: .9rem; }
+
+  .grafico { width: 100%; height: auto; display: block; }
+  .vazio { color: var(--muted); margin: 0; padding: 32px 0; text-align: center; }
+
+  .paginas { list-style: none; margin: 0; padding: 0; }
+  .paginas li { display: grid; grid-template-columns: minmax(120px, 1fr) 2fr auto; gap: 14px; align-items: center; padding: 10px 0; border-top: 1px solid var(--rule); }
+  .paginas li:first-child { border-top: 0; }
+  .paginas .caminho { font-weight: 600; color: var(--ink); overflow-wrap: anywhere; }
+  .paginas .trilho { height: 8px; background: var(--steel); border-radius: 4px; overflow: hidden; }
+  .paginas .preenchido { height: 100%; background: var(--blue); border-radius: 4px; }
+  .paginas .total { font-variant-numeric: tabular-nums; min-width: 3ch; text-align: right; font-weight: 600; }
+
+  @media (max-width: 560px) {
+    .paginas li { grid-template-columns: 1fr auto; }
+    .paginas .trilho { grid-column: 1 / -1; grid-row: 2; }
+    .barra label { min-width: 0; flex: 1 1 100%; }
+  }
 </style>
 </head>
 <body>
+<header class="topo">
+  <div>
+    <strong>Adrisert</strong>
+    <span>Acessos do site</span>
+  </div>
+  <button id="sair" type="button" hidden>Sair</button>
+</header>
+
 <main>
-  <h1>Painel de acessos</h1>
+  <section class="entrada" id="entrada" aria-labelledby="titulo-entrada">
+    <h2 id="titulo-entrada">Entrar no painel</h2>
+    <form id="formulario">
+      <label>
+        Senha do painel
+        <input id="senha" type="password" autocomplete="current-password" required>
+      </label>
+      <button class="principal" id="botao" type="submit">Entrar</button>
+      <p class="aviso" id="status-entrada" role="status"></p>
+    </form>
+  </section>
 
-  <form id="formulario">
-    <label>
-      1. Senha do painel
-      <input id="senha" type="password" autocomplete="current-password" required>
-    </label>
-    <label>
-      2. Período
-      <select id="dias">
-        <option value="7">Últimos 7 dias</option>
-        <option value="30" selected>Últimos 30 dias</option>
-        <option value="90">Últimos 90 dias</option>
-        <option value="365">Último ano</option>
-      </select>
-    </label>
-    <button id="botao" type="submit">3. Ver acessos</button>
-  </form>
+  <section id="painel" hidden>
+    <div class="barra">
+      <label>
+        Período
+        <select id="dias">
+          <option value="7">Últimos 7 dias</option>
+          <option value="30" selected>Últimos 30 dias</option>
+          <option value="90">Últimos 90 dias</option>
+          <option value="365">Último ano</option>
+        </select>
+      </label>
+      <p class="aviso" id="status-painel" role="status"></p>
+    </div>
 
-  <p id="status" role="status"></p>
-  <p id="resumo" class="resumo"></p>
+    <dl class="cartoes">
+      <div class="cartao"><dt>Acessos no período</dt><dd id="total">0</dd></div>
+      <div class="cartao"><dt>Média por dia</dt><dd id="media">0</dd></div>
+      <div class="cartao"><dt>Página mais vista</dt><dd id="top-pagina">–<small id="top-pagina-total"></small></dd></div>
+      <div class="cartao"><dt>Dia de pico</dt><dd id="pico">0<small id="pico-dia"></small></dd></div>
+    </dl>
 
-  <table id="tabela" hidden>
-    <thead>
-      <tr><th>Dia</th><th>Página</th><th class="numero">Acessos</th></tr>
-    </thead>
-    <tbody id="linhas"></tbody>
-  </table>
+    <article class="bloco">
+      <header>
+        <h2>Acessos por dia</h2>
+        <span id="intervalo"></span>
+      </header>
+      <svg id="grafico" class="grafico" role="img" aria-labelledby="grafico-titulo"></svg>
+      <p class="vazio" id="grafico-vazio" hidden>Nenhum acesso registrado neste período.</p>
+    </article>
+
+    <article class="bloco">
+      <header>
+        <h2>Páginas</h2>
+        <span>Acessos por página</span>
+      </header>
+      <ol class="paginas" id="paginas"></ol>
+      <p class="vazio" id="paginas-vazio" hidden>Nenhuma página visitada neste período.</p>
+    </article>
+  </section>
 </main>
 
 <script>
   (function () {
+    var SVG_NS = 'http://www.w3.org/2000/svg';
+    var token = null;
+
+    var entrada = document.getElementById('entrada');
+    var painel = document.getElementById('painel');
     var formulario = document.getElementById('formulario');
     var senha = document.getElementById('senha');
-    var dias = document.getElementById('dias');
     var botao = document.getElementById('botao');
-    var status = document.getElementById('status');
-    var resumo = document.getElementById('resumo');
-    var tabela = document.getElementById('tabela');
-    var linhas = document.getElementById('linhas');
+    var statusEntrada = document.getElementById('status-entrada');
+    var statusPainel = document.getElementById('status-painel');
+    var dias = document.getElementById('dias');
+    var sair = document.getElementById('sair');
+    var grafico = document.getElementById('grafico');
 
-    function mostrarErro(mensagem) {
-      status.textContent = mensagem;
-      status.className = 'erro';
+    function dataLocal(deslocamento) {
+      var d = new Date();
+      d.setDate(d.getDate() - deslocamento);
+      var mes = String(d.getMonth() + 1).padStart(2, '0');
+      var dia = String(d.getDate()).padStart(2, '0');
+      return d.getFullYear() + '-' + mes + '-' + dia;
     }
 
-    function desenharLinhas(dados) {
-      linhas.textContent = '';
+    function formatarDia(iso) {
+      var partes = iso.split('-');
+      return partes[2] + '/' + partes[1];
+    }
+
+    function numero(valor) {
+      return Number(valor).toLocaleString('pt-BR');
+    }
+
+    function resumir(linhas, periodo) {
+      var porDia = {};
+      var porPagina = {};
       var total = 0;
-      dados.forEach(function (item) {
+      linhas.forEach(function (item) {
         total += item.total;
-        var tr = document.createElement('tr');
-        [item.dia, item.caminho].forEach(function (valor) {
-          var td = document.createElement('td');
-          td.textContent = valor;
-          tr.appendChild(td);
-        });
-        var acessos = document.createElement('td');
-        acessos.className = 'numero';
-        acessos.textContent = item.total.toLocaleString('pt-BR');
-        tr.appendChild(acessos);
-        linhas.appendChild(tr);
+        porDia[item.dia] = (porDia[item.dia] || 0) + item.total;
+        porPagina[item.caminho] = (porPagina[item.caminho] || 0) + item.total;
       });
-      tabela.hidden = dados.length === 0;
-      resumo.textContent = 'Total no período: ' + total.toLocaleString('pt-BR') + ' acessos.';
-      status.textContent = dados.length === 0 ? 'Nenhum acesso registrado neste período.' : '';
-      status.className = '';
+
+      var serie = [];
+      for (var i = periodo - 1; i >= 0; i--) {
+        var dia = dataLocal(i);
+        serie.push({ dia: dia, total: porDia[dia] || 0 });
+      }
+
+      var pico = serie.reduce(function (melhor, atual) {
+        return atual.total > melhor.total ? atual : melhor;
+      }, serie[0]);
+
+      var paginas = Object.keys(porPagina)
+        .map(function (caminho) { return { caminho: caminho, total: porPagina[caminho] }; })
+        .sort(function (a, b) { return b.total - a.total; });
+
+      return { total: total, serie: serie, pico: pico, paginas: paginas, periodo: periodo };
     }
 
-    formulario.addEventListener('submit', function (evento) {
-      evento.preventDefault();
-      botao.disabled = true;
-      status.textContent = 'Carregando...';
-      status.className = '';
+    function desenharGrafico(serie) {
+      var largura = 720;
+      var altura = 260;
+      var margem = { esquerda: 44, direita: 12, topo: 16, base: 32 };
+      var areaLargura = largura - margem.esquerda - margem.direita;
+      var areaAltura = altura - margem.topo - margem.base;
+      var maximo = Math.max(1, Math.max.apply(null, serie.map(function (p) { return p.total; })));
+      var n = serie.length;
 
-      fetch('/api/acessos?dias=' + encodeURIComponent(dias.value), {
-        headers: { authorization: 'Bearer ' + senha.value },
+      function x(i) {
+        return n > 1 ? margem.esquerda + (i * areaLargura) / (n - 1) : margem.esquerda + areaLargura / 2;
+      }
+      function y(valor) {
+        return margem.topo + areaAltura - (valor / maximo) * areaAltura;
+      }
+      function criar(tag, atributos, pai) {
+        var elemento = document.createElementNS(SVG_NS, tag);
+        Object.keys(atributos).forEach(function (chave) { elemento.setAttribute(chave, atributos[chave]); });
+        if (pai) pai.appendChild(elemento);
+        return elemento;
+      }
+
+      grafico.textContent = '';
+      grafico.setAttribute('viewBox', '0 0 ' + largura + ' ' + altura);
+
+      [0, 0.5, 1].forEach(function (fracao) {
+        var valor = maximo * fracao;
+        var posicao = y(valor);
+        criar('line', { x1: margem.esquerda, x2: largura - margem.direita, y1: posicao, y2: posicao, stroke: '#c3ccd3', 'stroke-width': 1 }, grafico);
+        var rotulo = criar('text', { x: margem.esquerda - 8, y: posicao + 4, 'text-anchor': 'end', fill: '#566672', 'font-size': 12 }, grafico);
+        rotulo.textContent = numero(Math.round(valor));
+      });
+
+      var base = y(0);
+      var caminho = serie.map(function (p, i) { return (i === 0 ? 'M' : 'L') + x(i) + ',' + y(p.total); }).join(' ');
+      criar('path', { d: caminho + ' L' + x(n - 1) + ',' + base + ' L' + x(0) + ',' + base + ' Z', fill: '#0060b4', 'fill-opacity': 0.12 }, grafico);
+      criar('path', { d: caminho, fill: 'none', stroke: '#0060b4', 'stroke-width': 2.5, 'stroke-linejoin': 'round' }, grafico);
+
+      serie.forEach(function (p, i) {
+        var ponto = criar('circle', { cx: x(i), cy: y(p.total), r: 3.5, fill: '#0060b4' }, grafico);
+        var titulo = criar('title', {}, ponto);
+        titulo.textContent = formatarDia(p.dia) + ': ' + numero(p.total) + ' acessos';
+      });
+
+      var indices = n > 2 ? [0, Math.floor((n - 1) / 2), n - 1] : [0, n - 1];
+      indices.forEach(function (i) {
+        var ancora = i === 0 ? 'start' : (i === n - 1 ? 'end' : 'middle');
+        var rotulo = criar('text', { x: x(i), y: altura - 8, 'text-anchor': ancora, fill: '#566672', 'font-size': 12 }, grafico);
+        rotulo.textContent = formatarDia(serie[i].dia);
+      });
+    }
+
+    function desenharPaginas(paginas) {
+      var lista = document.getElementById('paginas');
+      lista.textContent = '';
+      var maximo = paginas.length ? paginas[0].total : 1;
+
+      paginas.forEach(function (pagina) {
+        var item = document.createElement('li');
+
+        var caminho = document.createElement('span');
+        caminho.className = 'caminho';
+        caminho.textContent = pagina.caminho;
+
+        var trilho = document.createElement('span');
+        trilho.className = 'trilho';
+        var preenchido = document.createElement('span');
+        preenchido.className = 'preenchido';
+        preenchido.style.width = ((pagina.total / maximo) * 100).toFixed(1) + '%';
+        trilho.appendChild(preenchido);
+
+        var total = document.createElement('span');
+        total.className = 'total';
+        total.textContent = numero(pagina.total);
+
+        item.appendChild(caminho);
+        item.appendChild(trilho);
+        item.appendChild(total);
+        lista.appendChild(item);
+      });
+
+      document.getElementById('paginas-vazio').hidden = paginas.length > 0;
+    }
+
+    function mostrarResumo(resumo) {
+      var mediaDiaria = resumo.total / resumo.periodo;
+      document.getElementById('total').textContent = numero(resumo.total);
+      document.getElementById('media').textContent = mediaDiaria.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+
+      var topo = resumo.paginas[0];
+      document.getElementById('top-pagina').firstChild.textContent = topo ? topo.caminho : '–';
+      document.getElementById('top-pagina-total').textContent = topo ? numero(topo.total) + ' acessos' : '';
+
+      document.getElementById('pico').firstChild.textContent = numero(resumo.pico.total);
+      document.getElementById('pico-dia').textContent = resumo.pico.total > 0 ? formatarDia(resumo.pico.dia) : '';
+
+      document.getElementById('intervalo').textContent = formatarDia(resumo.serie[0].dia) + ' a ' + formatarDia(resumo.serie[resumo.serie.length - 1].dia);
+      document.getElementById('grafico-vazio').hidden = resumo.total > 0;
+      grafico.hidden = resumo.total === 0;
+      desenharGrafico(resumo.serie);
+      desenharPaginas(resumo.paginas);
+    }
+
+    function carregar() {
+      botao.disabled = true;
+      statusPainel.textContent = 'Carregando...';
+      statusPainel.className = 'aviso';
+      var periodo = Number(dias.value);
+
+      return fetch('/api/acessos?dias=' + periodo, {
+        headers: { authorization: 'Bearer ' + token },
       })
         .then(function (resposta) {
-          if (resposta.status === 401) throw new Error('Senha incorreta.');
-          if (!resposta.ok) throw new Error('Não foi possível carregar os acessos. Tente novamente.');
+          if (resposta.status === 401) throw { senhaErrada: true };
+          if (!resposta.ok) throw new Error('Não foi possível carregar os acessos. Tente de novo.');
           return resposta.json();
         })
-        .then(desenharLinhas)
+        .then(function (linhas) {
+          mostrarResumo(resumir(linhas, periodo));
+          statusPainel.textContent = '';
+          return true;
+        })
         .catch(function (erro) {
-          mostrarErro(erro.message);
+          if (erro && erro.senhaErrada) {
+            token = null;
+            statusPainel.textContent = '';
+            return false;
+          }
+          statusPainel.textContent = erro.message;
+          statusPainel.className = 'aviso erro';
+          return false;
         })
         .finally(function () {
           botao.disabled = false;
         });
+    }
+
+    formulario.addEventListener('submit', function (evento) {
+      evento.preventDefault();
+      token = senha.value;
+      statusEntrada.textContent = 'Entrando...';
+      statusEntrada.className = 'aviso';
+      carregar().then(function (ok) {
+        if (!ok) {
+          statusEntrada.textContent = statusPainel.textContent || 'Senha incorreta.';
+          statusEntrada.className = 'aviso erro';
+          statusPainel.textContent = '';
+          return;
+        }
+        senha.value = '';
+        statusEntrada.textContent = '';
+        entrada.hidden = true;
+        painel.hidden = false;
+        sair.hidden = false;
+      });
+    });
+
+    dias.addEventListener('change', function () {
+      if (token) carregar();
+    });
+
+    sair.addEventListener('click', function () {
+      token = null;
+      painel.hidden = true;
+      entrada.hidden = false;
+      sair.hidden = true;
+      statusEntrada.textContent = '';
+      statusEntrada.className = 'aviso';
+      senha.focus();
     });
   })();
 </script>
