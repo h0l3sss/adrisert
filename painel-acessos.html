@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Painel de acessos | Adrisert</title>
+<style>
+  :root { --fundo: #f4f6f8; --texto: #101c26; --borda: #d5dce3; --destaque: #1f5f8b; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --fundo: #101c26; --texto: #e8edf2; --borda: #34465a; --destaque: #6fb0de; }
+  }
+  body { margin: 0; padding: 16px; font-family: "IBM Plex Sans", system-ui, sans-serif; background: var(--fundo); color: var(--texto); }
+  main { max-width: 760px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin: 8px 0 16px; }
+  form { display: grid; gap: 12px; margin-bottom: 20px; }
+  label { display: grid; gap: 4px; font-weight: 600; }
+  input, select, button { font: inherit; padding: 10px; border: 1px solid var(--borda); border-radius: 6px; background: transparent; color: inherit; }
+  button { background: var(--destaque); color: #fff; border-color: var(--destaque); cursor: pointer; font-weight: 600; }
+  button:disabled { opacity: .6; cursor: wait; }
+  .resumo { margin: 0 0 12px; }
+  .erro { color: #b42318; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--borda); overflow-wrap: anywhere; }
+  td.numero, th.numero { text-align: right; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Painel de acessos</h1>
+
+  <form id="formulario">
+    <label>
+      1. Senha do painel
+      <input id="senha" type="password" autocomplete="current-password" required>
+    </label>
+    <label>
+      2. Período
+      <select id="dias">
+        <option value="7">Últimos 7 dias</option>
+        <option value="30" selected>Últimos 30 dias</option>
+        <option value="90">Últimos 90 dias</option>
+        <option value="365">Último ano</option>
+      </select>
+    </label>
+    <button id="botao" type="submit">3. Ver acessos</button>
+  </form>
+
+  <p id="status" role="status"></p>
+  <p id="resumo" class="resumo"></p>
+
+  <table id="tabela" hidden>
+    <thead>
+      <tr><th>Dia</th><th>Página</th><th class="numero">Acessos</th></tr>
+    </thead>
+    <tbody id="linhas"></tbody>
+  </table>
+</main>
+
+<script>
+  (function () {
+    var formulario = document.getElementById('formulario');
+    var senha = document.getElementById('senha');
+    var dias = document.getElementById('dias');
+    var botao = document.getElementById('botao');
+    var status = document.getElementById('status');
+    var resumo = document.getElementById('resumo');
+    var tabela = document.getElementById('tabela');
+    var linhas = document.getElementById('linhas');
+
+    function mostrarErro(mensagem) {
+      status.textContent = mensagem;
+      status.className = 'erro';
+    }
+
+    function desenharLinhas(dados) {
+      linhas.textContent = '';
+      var total = 0;
+      dados.forEach(function (item) {
+        total += item.total;
+        var tr = document.createElement('tr');
+        [item.dia, item.caminho].forEach(function (valor) {
+          var td = document.createElement('td');
+          td.textContent = valor;
+          tr.appendChild(td);
+        });
+        var acessos = document.createElement('td');
+        acessos.className = 'numero';
+        acessos.textContent = item.total.toLocaleString('pt-BR');
+        tr.appendChild(acessos);
+        linhas.appendChild(tr);
+      });
+      tabela.hidden = dados.length === 0;
+      resumo.textContent = 'Total no período: ' + total.toLocaleString('pt-BR') + ' acessos.';
+      status.textContent = dados.length === 0 ? 'Nenhum acesso registrado neste período.' : '';
+      status.className = '';
+    }
+
+    formulario.addEventListener('submit', function (evento) {
+      evento.preventDefault();
+      botao.disabled = true;
+      status.textContent = 'Carregando...';
+      status.className = '';
+
+      fetch('/api/acessos?dias=' + encodeURIComponent(dias.value), {
+        headers: { authorization: 'Bearer ' + senha.value },
+      })
+        .then(function (resposta) {
+          if (resposta.status === 401) throw new Error('Senha incorreta.');
+          if (!resposta.ok) throw new Error('Não foi possível carregar os acessos. Tente novamente.');
+          return resposta.json();
+        })
+        .then(desenharLinhas)
+        .catch(function (erro) {
+          mostrarErro(erro.message);
+        })
+        .finally(function () {
+          botao.disabled = false;
+        });
+    });
+  })();
+</script>
+</body>
+</html>
